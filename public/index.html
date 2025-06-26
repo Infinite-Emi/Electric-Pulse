@@ -480,8 +480,8 @@
                     message: formData.get('message')
                 };
 
-                // --- Replace with your actual Railway API URL ---
-                const apiUrl = 'https://your-railway-app-name.up.railway.app/send-email';
+                // --- Use a relative path for the API URL ---
+                const apiUrl = '/api/send-email';
 
                 try {
                     const response = await fetch(apiUrl, {
