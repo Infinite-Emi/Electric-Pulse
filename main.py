@@ -21,13 +21,18 @@ app = FastAPI(
 )
 
 # --- CORS (Cross-Origin Resource Sharing) Middleware ---
-# This is still useful if you have other services that might call your API.
-origins = ["*"]
+# Updated to handle the preflight OPTIONS request and be more specific with origins.
+origins = [
+    "https://electric-pulse-production.up.railway.app", # Your production frontend
+    "http://localhost",
+    "http://localhost:8000",
+    # You can add your Codespaces URL here if needed, e.g., "https://*.github.dev"
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["POST", "GET"], # Allow GET for the health check
+    allow_methods=["POST", "GET", "OPTIONS"], # Added "OPTIONS" to handle preflight requests
     allow_headers=["*"],
 )
 
