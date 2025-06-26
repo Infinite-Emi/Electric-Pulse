@@ -415,22 +415,23 @@
             <h2 class="section-title font-orbitron text-6xl md:text-8xl lg:text-9xl font-black text-center mb-12 tracking-wider uppercase w-full py-8">Book Us</h2>
             <div class="container mx-auto px-6">
                 <div class="max-w-4xl mx-auto text-center text-lg text-gray-300 mb-8">
-                             <p>We're available for corporate events, private parties, weddings, and galactic celebrations. Let's make your event unforgettable.</p>
+                    <p>We're available for corporate events, private parties, weddings, and galactic celebrations. Let's make your event unforgettable.</p>
                 </div>
                 <div class="max-w-2xl mx-auto p-8 border rounded-lg" style="background-color: rgba(23, 17, 34, 0.8); backdrop-filter: blur(10px); border-color: rgba(236, 72, 153, 0.2);">
-                    <form action="#" method="POST">
+                    <form id="contact-form">
+                        <div id="form-response" class="mb-4 text-center"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <input type="text" placeholder="Your Name" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink">
-                            <input type="email" placeholder="Your Email" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink">
+                            <input type="text" id="name" name="name" placeholder="Your Name" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink" required>
+                            <input type="email" id="email" name="email" placeholder="Your Email" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink" required>
                         </div>
                         <div class="mb-6">
-                            <input type="text" placeholder="Event Type (e.g., Wedding, Corporate)" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink">
+                            <input type="text" id="eventType" name="eventType" placeholder="Event Type (e.g., Wedding, Corporate)" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink" required>
                         </div>
                         <div class="mb-6">
-                            <textarea placeholder="Tell us about your event..." rows="5" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink"></textarea>
+                            <textarea id="message" name="message" placeholder="Tell us about your event..." rows="5" class="w-full bg-gray-800 text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-pink" required></textarea>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="w-full md:w-auto inline-block bg-brand-pink text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:bg-brand-pink-hover hover:scale-105" style="box-shadow: 0 0 5px var(--brand-pink), 0 0 15px var(--brand-pink);">Send Inquiry</button>
+                            <button type="submit" id="submit-button" class="w-full md:w-auto inline-block bg-brand-pink text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:bg-brand-pink-hover hover:scale-105" style="box-shadow: 0 0 5px var(--brand-pink), 0 0 15px var(--brand-pink);">Send Inquiry</button>
                         </div>
                     </form>
                 </div>
@@ -454,6 +455,68 @@
     
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Contact Form Submission ---
+        const contactForm = document.getElementById('contact-form');
+        const submitButton = document.getElementById('submit-button');
+        const formResponse = document.getElementById('form-response');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // --- UI Feedback: Loading State ---
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+                formResponse.textContent = '';
+                formResponse.classList.remove('text-green-400', 'text-red-400');
+
+
+                const formData = new FormData(contactForm);
+                const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    eventType: formData.get('eventType'),
+                    message: formData.get('message')
+                };
+
+                // --- Replace with your actual Railway API URL ---
+                const apiUrl = 'https://your-railway-app-name.up.railway.app/send-email';
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // --- UI Feedback: Success State ---
+                        formResponse.textContent = "Thanks for reaching out! We'll get back to you soon.";
+                        formResponse.classList.add('text-green-400');
+                        contactForm.reset();
+                    } else {
+                         // --- UI Feedback: Error State ---
+                        formResponse.textContent = `Error: ${result.detail || 'Something went wrong.'}`;
+                        formResponse.classList.add('text-red-400');
+                    }
+                } catch (error) {
+                     // --- UI Feedback: Network Error State ---
+                    console.error('Submission error:', error);
+                    formResponse.textContent = 'Failed to connect to the server. Please try again later.';
+                    formResponse.classList.add('text-red-400');
+                } finally {
+                    // --- Reset Button ---
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Inquiry';
+                }
+            });
+        }
+
 
         // --- Mobile Menu Toggle ---
         const mobileMenuButton = document.getElementById('mobile-menu-button');

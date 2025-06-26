@@ -1,0 +1,9 @@
+# requirements.txt
+# This file lists the Python packages your server needs.
+# Railway will automatically install these.
+
+fastapi
+uvicorn[standard]
+pydantic[email]
+resend
+python-dotenv
