@@ -109,6 +109,7 @@
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             transition: all 0.3s ease-in-out;
             background-color: var(--brand-purple);
+            overflow: hidden; /* Contain the sparks */
         }
         .group:hover .hexagon-container {
             transform: scale(1.05);
@@ -119,6 +120,44 @@
             height: 100%;
             object-fit: cover;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        /* --- Spark Animation for Hexagons --- */
+        .spark {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--brand-pink), transparent);
+            box-shadow: 0 0 4px var(--brand-pink);
+            opacity: 0;
+            pointer-events: none;
+            animation-timing-function: ease-out;
+            animation-iteration-count: infinite;
+        }
+
+        .group:hover .spark { opacity: 1; } /* Make sparks visible on hover */
+
+        .group:hover .spark-1 { top: -10%; left: 20%; height: 30px; animation-name: spark-fall; animation-duration: 0.8s; animation-delay: 0s; }
+        .group:hover .spark-2 { top: -10%; left: 80%; height: 50px; animation-name: spark-fall; animation-duration: 0.7s; animation-delay: 0.2s; }
+        .group:hover .spark-3 { top: 50%; left: -10%; width: 30px; height: 2px; background: linear-gradient(to right, transparent, var(--brand-pink), transparent); animation-name: spark-right; animation-duration: 0.6s; animation-delay: 0.1s; }
+        .group:hover .spark-4 { top: 80%; left: -10%; width: 40px; height: 2px; background: linear-gradient(to right, transparent, var(--brand-pink), transparent); animation-name: spark-right; animation-duration: 0.9s; animation-delay: 0.4s; }
+        .group:hover .spark-5 { top: 20%; right: -10%; width: 35px; height: 2px; background: linear-gradient(to left, transparent, var(--brand-pink), transparent); animation-name: spark-left; animation-duration: 0.7s; animation-delay: 0.3s; }
+        .group:hover .spark-6 { bottom: -10%; left: 50%; height: 40px; animation-name: spark-rise; animation-duration: 1s; animation-delay: 0.5s; }
+
+        @keyframes spark-fall {
+            0% { transform: translateY(-50px) scaleY(1); opacity: 1; }
+            100% { transform: translateY(150px) scaleY(1.5); opacity: 0; }
+        }
+        @keyframes spark-rise {
+            0% { transform: translateY(50px) scaleY(1); opacity: 1; }
+            100% { transform: translateY(-150px) scaleY(1.5); opacity: 0; }
+        }
+        @keyframes spark-right {
+            0% { transform: translateX(-50px) scaleX(1); opacity: 1; }
+            100% { transform: translateX(150px) scaleX(1.5); opacity: 0; }
+        }
+        @keyframes spark-left {
+            0% { transform: translateX(50px) scaleX(1); opacity: 1; }
+            100% { transform: translateX(-150px) scaleX(1.5); opacity: 0; }
         }
 
         /* --- Animation classes for Intersection Observer --- */
@@ -208,6 +247,7 @@
                     <div class="text-center group" style="transition-delay: 100ms;">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/JAX.png" alt="Jax, Lead Vocals & Guitar" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
+                            <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
                         </div>
                         <h3 class="text-2xl font-bold font-orbitron">JAX</h3>
                         <p class="text-brand-pink">Lead Vocals & Synth-Guitar</p>
@@ -215,6 +255,7 @@
                     <div class="text-center group" style="transition-delay: 200ms;">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/CYRA.png" alt="Cyra, Bass & Vocals" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
+                            <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
                         </div>
                         <h3 class="text-2xl font-bold font-orbitron">CYRA</h3>
                         <p class="text-brand-pink">Bass & Backing Vocals</p>
@@ -222,6 +263,7 @@
                     <div class="text-center group" style="transition-delay: 300ms;">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/NEXO.png" alt="Nexo, Drums" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
+                            <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
                         </div>
                         <h3 class="text-2xl font-bold font-orbitron">NEXO</h3>
                         <p class="text-brand-pink">Acoustic & Digital Drums</p>
@@ -229,6 +271,7 @@
                     <div class="text-center group" style="transition-delay: 400ms;">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/ORION.png" alt="Orion, Keys & Soundscapes" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
+                            <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
                         </div>
                         <h3 class="text-2xl font-bold font-orbitron">ORION</h3>
                         <p class="text-brand-pink">Keys & Soundscapes</p>
