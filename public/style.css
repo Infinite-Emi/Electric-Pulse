@@ -312,3 +312,73 @@ body {
     transform: rotate(90deg);
 }
 
+/* Blog post content line spacing */
+.prose {
+    line-height: 1.75;
+}
+
+/* Headings within prose for visual hierarchy */
+.prose h1 {
+    font-size: 2.5em; /* Larger for H1 */
+    font-weight: 900; /* Extra bold */
+    color: var(--brand-pink);
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.prose h2 {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--brand-pink);
+    margin-top: 1.75em;
+    margin-bottom: 0.8em;
+}
+
+.prose h3 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--brand-pink);
+    margin-top: 1.25em;
+    margin-bottom: 0.6em;
+}
+
+.prose h4 {
+    font-size: 1.25em;
+    font-weight: 600; /* Slightly less bold than H3 */
+    color: var(--brand-pink);
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+/* Bold and Italics */
+.prose strong {
+    font-weight: 700; /* Ensure strong is clearly bold */
+    color: #fff; /* Ensure it stands out if body text is gray */
+}
+
+.prose em {
+    font-style: italic; /* Ensure emphasis is italicized */
+    color: #ddd; /* Slightly lighter color for italics */
+}
+
+/* Quotes (Blockquotes) */
+.prose blockquote {
+    border-left: 4px solid var(--brand-pink);
+    padding-left: 1.25em;
+    margin-left: 0; /* Reset default margins if any */
+    margin-right: 0;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    color: #ccc; /* Slightly lighter text for quotes */
+    font-style: italic;
+}
+
+/* Margin and centering for embedded elements within blog content */
+.prose img,
+.prose audio,
+.prose video,
+.prose iframe {
+    display: block;
+    margin: 15px auto;
+}
+

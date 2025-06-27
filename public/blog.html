@@ -85,34 +85,34 @@
 
     <main class="w-full overflow-x-hidden min-h-screen">
         <section id="blog" class="py-12 fade-in-section">
-            <h2 class="section-title font-orbitron text-6xl md:text-8xl lg:text-9xl font-black text-center mb-12 tracking-wider uppercase w-full py-8">Our Blog</h2>
+            <h2 class="section-title font-orbitron text-5xl md:text-8xl lg:text-9xl font-black text-center mb-12 tracking-wider uppercase w-full py-8">Our Blog</h2>
             <div class="container mx-auto px-6">
                 <div class="max-w-4xl mx-auto bg-card-bg-color border border-brand-purple/20 p-8 rounded-lg shadow-xl transition-all duration-300 hover:shadow-brand-pink/20 hover:border-brand-pink/20">
                     
-                    <div class="flex items-center mb-6">
-                        <div class="hexagon-container w-20 h-20 flex-shrink-0 mr-4 p-0.5">
+                    <h2 id="blog-title" class="text-3xl md:text-5xl font-bold font-orbitron text-white mb-4 text-center md:text-left"></h2>
+
+                    <div class="flex flex-col items-center md:items-start mb-6">
+                        <div class="hexagon-container w-32 h-32 flex-shrink-0 p-0.5 mb-4">
                             <img id="author-image" src="" alt="Author Image" class="hexagon-image"/>
                         </div>
-                        <div>
-                            <h3 id="blog-title" class="text-2xl font-bold font-orbitron text-white"></h3>
-                            <p id="blog-date" class="text-brand-pink text-md"></p>
-                            <p id="author-name" class="text-gray-400 text-sm"></p>
-                            <div id="blog-tags" class="flex flex-wrap gap-2 mt-2">
-                            </div>
-                        </div>
+                        <p id="author-name" class="text-xl text-gray-400 mb-1"></p>
+                        <p id="blog-date" class="text-2xl text-brand-pink"></p>
+                    </div>
+                    
+                    <div id="blog-post-content" class="prose prose-invert max-w-none text-gray-300">
                     </div>
 
-                    <div id="blog-post-content" class="prose prose-invert max-w-none text-gray-300">
-                        </div>
+                    <div id="blog-tags" class="flex flex-wrap justify-center gap-2 mt-8 py-4 border-t border-brand-purple/20 md:justify-start">
+                    </div>
 
                     <div id="author-bio-section" class="mt-8 pt-6 border-t border-brand-purple/20">
-                        <h4 class="text-xl font-bold font-orbitron text-white mb-2">About the Author: <span id="author-bio-name"></span></h4>
+                        <h4 class="text-3xl font-bold font-orbitron text-white mb-2">About the Author: <span id="author-bio-name"></span></h4>
                         <p id="author-bio-text" class="text-gray-400 text-sm leading-relaxed"></p>
                     </div>
 
                 </div>
                 
-                <div id="next-post-section" class="max-w-4xl mx-auto mt-8 p-6 text-center bg-card-bg-color border border-brand-purple/20 rounded-lg shadow-xl hidden">
+                <div id="next-post-section" class="max-w-4xl mx-auto mt-8 p-6 text-center bg-card-bg-color border border-brand-purple/20 rounded-lg shadow-xl hidden cursor-pointer" onclick="window.location.href=document.getElementById('next-post-link').href;">
                     <h4 class="text-xl font-bold font-orbitron text-white mb-2">Next Post</h4>
                     <a id="next-post-link" href="#" class="text-brand-pink hover:text-brand-pink-hover text-lg font-bold font-orbitron transition-colors duration-300"></a>
                 </div>
@@ -204,12 +204,12 @@
                     });
                 }
 
-                // Render the markdown content
+                // Render the markdown content for the main blog post
                 blogPostContentDiv.innerHTML = marked.parse(currentPost.markdown_content);
 
-                // Populate author bio, converting newlines to <br><br> tags
+                // Populate author bio, now parsing markdown content
                 authorBioNameEl.textContent = currentPost.author_name;
-                authorBioTextEl.innerHTML = currentPost.author_bio.replace(/\n/g, '<br><br>');
+                authorBioTextEl.innerHTML = marked.parse(currentPost.author_bio);
 
                 // Handle "Next Post" link
                 if (posts.length > currentPostIndex + 1) {
