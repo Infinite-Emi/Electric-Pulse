@@ -1,0 +1,166 @@
+/* CSS Variables for easier theme management */
+:root {
+    --brand-pink: #ec4899;
+    --brand-purple: #6d28d9;
+    --dark-bg: #0a0a0a;
+}
+
+/* Custom styles to complement Tailwind */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dark-bg);
+    color: #e5e7eb;
+    background-image:
+        linear-gradient(30deg, rgba(109, 40, 217, 0.05) 1px, transparent 1px),
+        linear-gradient(-30deg, rgba(109, 40, 217, 0.05) 1px, transparent 1px);
+    background-size: 34px 60px;
+}
+.font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* --- Animated Hero Background --- */
+.hero-bg {
+    position: relative;
+    background-color: var(--dark-bg);
+    overflow: hidden;
+}
+
+.hero-bg::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    background-image:
+        linear-gradient(var(--brand-purple), transparent 1px),
+        linear-gradient(90deg, var(--brand-purple), transparent 1px);
+    background-size: 35px 35px;
+    opacity: 0.1;
+    animation: moveGrid 20s linear infinite;
+    z-index: 2; /* Sits above video/overlay but below content */
+}
+
+@keyframes moveGrid {
+    0% { background-position: 0 0; }
+    100% { background-position: -70px -70px; }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3; /* On top of video, overlay, and grid */
+}
+
+/* --- Glow Effects & Shadows --- */
+.text-shadow-glow {
+    text-shadow: 0 0 8px rgba(236, 72, 153, 0.7), 0 0 10px rgba(236, 72, 153, 0.5);
+}
+
+/* --- Lightning Section Title --- */
+.section-title {
+    color: #fff;
+    background-color: rgba(10,10,10,0.5);
+    -webkit-text-stroke: 1px var(--brand-pink);
+    animation: lightning-flicker 5s linear infinite;
+}
+
+@keyframes lightning-flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow:
+            0 0 10px var(--brand-pink),
+            0 0 40px var(--brand-pink),
+            0 0 150px var(--brand-pink);
+    }
+    20%, 24%, 55% { 
+        text-shadow: none;
+    }
+}
+
+/* --- Hexagon Elements --- */
+.hexagon-container {
+    position: relative;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    transition: all 0.3s ease-in-out;
+    background-color: var(--brand-purple);
+    overflow: hidden; /* Contain the sparks */
+}
+.group:hover .hexagon-container {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(109, 40, 217, 0.6);
+}
+.hexagon-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* --- Spark Animation for Hexagons --- */
+.spark {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--brand-pink), transparent);
+    box-shadow: 0 0 4px var(--brand-pink);
+    opacity: 0;
+    pointer-events: none;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+}
+
+.group:hover .spark { opacity: 1; } /* Make sparks visible on hover */
+
+.group:hover .spark-1 { top: -10%; left: 20%; height: 30px; animation-name: spark-fall; animation-duration: 0.8s; animation-delay: 0s; }
+.group:hover .spark-2 { top: -10%; left: 80%; height: 50px; animation-name: spark-fall; animation-duration: 0.7s; animation-delay: 0.2s; }
+.group:hover .spark-3 { top: 50%; left: -10%; width: 30px; height: 2px; background: linear-gradient(to right, transparent, var(--brand-pink), transparent); animation-name: spark-right; animation-duration: 0.6s; animation-delay: 0.1s; }
+.group:hover .spark-4 { top: 80%; left: -10%; width: 40px; height: 2px; background: linear-gradient(to right, transparent, var(--brand-pink), transparent); animation-name: spark-right; animation-duration: 0.9s; animation-delay: 0.4s; }
+.group:hover .spark-5 { top: 20%; right: -10%; width: 35px; height: 2px; background: linear-gradient(to left, transparent, var(--brand-pink), transparent); animation-name: spark-left; animation-duration: 0.7s; animation-delay: 0.3s; }
+.group:hover .spark-6 { bottom: -10%; left: 50%; height: 40px; animation-name: spark-rise; animation-duration: 1s; animation-delay: 0.5s; }
+
+@keyframes spark-fall {
+    0% { transform: translateY(-50px) scaleY(1); opacity: 1; }
+    100% { transform: translateY(150px) scaleY(1.5); opacity: 0; }
+}
+@keyframes spark-rise {
+    0% { transform: translateY(50px) scaleY(1); opacity: 1; }
+    100% { transform: translateY(-150px) scaleY(1.5); opacity: 0; }
+}
+@keyframes spark-right {
+    0% { transform: translateX(-50px) scaleX(1); opacity: 1; }
+    100% { transform: translateX(150px) scaleX(1.5); opacity: 0; }
+}
+@keyframes spark-left {
+    0% { transform: translateX(50px) scaleX(1); opacity: 1; }
+    100% { transform: translateX(-150px) scaleX(1.5); opacity: 0; }
+}
+
+/* --- Animation classes for Intersection Observer --- */
+.fade-in-section > * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-section.is-visible > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Gallery / Slideshow --- */
+.main-image-container {
+    background-color: rgba(23, 17, 34, 0.8);
+    border-color: rgba(236, 72, 153, 0.2);
+}
+
+/* --- Mobile Menu Animation --- */
+#mobile-menu {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease-in-out;
+}
+#mobile-menu.menu-open {
+    transform: scaleY(1);
+}
+
+/* --- Form Validation --- */
+.form-input-error {
+    border-color: #f43f5e !important; /* Tailwind red-500 */
+    --tw-ring-color: #f43f5e !important;
+}
