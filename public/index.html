@@ -26,7 +26,10 @@
     <script src="https://unpkg.com/libphonenumber-js@1.11.4/bundle/libphonenumber-js.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Google Fonts: Inter and Orbitron -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="style.css">
     
     <!-- Favicon Links -->
@@ -212,30 +215,42 @@
         <section id="gallery" class="py-12 fade-in-section">
             <h2 class="section-title font-orbitron text-6xl md:text-8xl lg:text-9xl font-black text-center mb-12 tracking-wider uppercase w-full py-8">Gallery</h2>
             <div class="container mx-auto px-6">
-                <!-- Trailer Video Section -->
-                <div class="max-w-4xl mx-auto mb-12">
-                    <h3 class="font-orbitron text-3xl text-center mb-6 text-brand-pink">Official Trailer</h3>
-                    <div class="main-image-container relative p-2 rounded-lg border">
-                        <video controls class="w-full rounded-md" poster="assets/images/gallery-image1.png">
-                            <source src="assets/video/electric-pulse-trailer.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                
+                <!-- Video Slideshow -->
+                <div class="max-w-4xl mx-auto mb-16" id="video-gallery-container">
+                    <h3 class="font-orbitron text-3xl text-center mb-6 text-brand-pink">Videos</h3>
+                    <div class="main-media-container relative mb-4 p-2 rounded-lg border transition-all duration-300">
+                        <div id="main-video-wrapper" class="relative w-full h-auto aspect-video">
+                            <!-- Video elements will be injected here by script.js -->
+                        </div>
+                        <button id="video-prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button id="video-next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                    <div id="video-thumbnail-container" class="flex justify-center space-x-3 p-2 overflow-x-auto">
+                        <!-- Video thumbnails will be injected here -->
                     </div>
                 </div>
 
                 <!-- Image Slideshow -->
-                <div class="max-w-4xl mx-auto" id="gallery-container">
-                    <div class="main-image-container relative mb-4 p-2 rounded-lg border transition-all duration-300">
+                <div class="max-w-4xl mx-auto" id="image-gallery-container">
+                    <h3 class="font-orbitron text-3xl text-center mb-6 text-brand-pink">Images</h3>
+                    <div class="main-media-container relative mb-4 p-2 rounded-lg border transition-all duration-300">
                         <div id="main-image-wrapper" class="relative w-full h-auto aspect-video">
+                             <!-- Image elements will be injected here by script.js -->
                         </div>
-                        <button id="prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
+                        <button id="image-prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
-                        <button id="next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
+                        <button id="image-next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/50 hover:bg-brand-pink transition-colors duration-300">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                         </button>
                     </div>
-                    <div id="thumbnail-container" class="flex justify-center space-x-3 p-2 overflow-x-auto">
+                    <div id="image-thumbnail-container" class="flex justify-center space-x-3 p-2 overflow-x-auto">
+                        <!-- Image thumbnails will be injected here -->
                     </div>
                 </div>
             </div>

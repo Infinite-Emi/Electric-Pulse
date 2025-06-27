@@ -17,14 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const showError = (input, message) => {
         const errorElement = document.getElementById(`${input.id}-error`);
-        input.classList.add('form-input-error');
-        errorElement.textContent = message;
+        if (errorElement) {
+            input.classList.add('form-input-error');
+            errorElement.textContent = message;
+        }
     };
 
     const clearError = (input) => {
         const errorElement = document.getElementById(`${input.id}-error`);
-        input.classList.remove('form-input-error');
-        errorElement.textContent = '';
+        if (errorElement) {
+            input.classList.remove('form-input-error');
+            errorElement.textContent = '';
+        }
     };
 
     const validateEmail = (email) => {
@@ -39,12 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
         // Use the library to check for validity, providing 'GB' as the default country.
-        const phoneNumber = libphonenumber.parsePhoneNumberFromString(phone, 'GB');
-        return phoneNumber && phoneNumber.isValid();
+        if (typeof libphonenumber !== 'undefined') {
+            const phoneNumber = libphonenumber.parsePhoneNumberFromString(phone, 'GB');
+            return phoneNumber && phoneNumber.isValid();
+        }
+        return true; // Failsafe if library doesn't load
     };
 
     // Validates a single input and shows/hides its error message
     const validateInput = (input) => {
+        if (!input) return true;
         if (!input.hasAttribute('required') && input.value.trim() === '') {
              clearError(input);
              return true;
@@ -106,35 +114,40 @@ document.addEventListener('DOMContentLoaded', () => {
         let isFormValid = true;
         // Check all required fields
         for (const input of requiredInputs) {
-            if (input.value.trim() === '') {
+            if (input && input.value.trim() === '') {
                 isFormValid = false;
                 break;
             }
         }
         // Check email format if it's filled
-         if (isFormValid && !validateEmail(emailInput.value.trim())) {
+         if (isFormValid && emailInput && !validateEmail(emailInput.value.trim())) {
             isFormValid = false;
         }
         // Also check phone validity if it's filled
-        if (isFormValid && !isPhoneValid(phoneInput.value)) {
+        if (isFormValid && phoneInput && !isPhoneValid(phoneInput.value)) {
             isFormValid = false;
         }
-        submitButton.disabled = !isFormValid;
+        if(submitButton) submitButton.disabled = !isFormValid;
     };
 
     // Add event listeners
     inputs.forEach(input => {
-        input.addEventListener('blur', () => validateInput(input));
-        input.addEventListener('input', () => {
-            if (input.classList.contains('form-input-error')) {
-                validateInput(input);
-            }
-            checkFormValidity();
-        });
+        if (input) {
+            input.addEventListener('blur', () => validateInput(input));
+            input.addEventListener('input', () => {
+                if (input.classList.contains('form-input-error')) {
+                    validateInput(input);
+                }
+                checkFormValidity();
+            });
+        }
     });
 
     // Initially disable the button
-    submitButton.disabled = true;
+    if(submitButton) {
+        submitButton.disabled = true;
+    }
+
 
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
@@ -142,12 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let isFormValid = true;
             inputs.forEach(input => {
-                if (!validateInput(input)) isFormValid = false;
+                if (input && !validateInput(input)) isFormValid = false;
             });
 
             if (!isFormValid) {
-                formResponse.textContent = 'Please fix the errors before submitting.';
-                formResponse.classList.add('text-red-400');
+                if (formResponse) {
+                    formResponse.textContent = 'Please fix the errors before submitting.';
+                    formResponse.classList.add('text-red-400');
+                }
                 return;
             }
             
@@ -159,8 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(contactForm);
             let fullPhoneNumber = '';
             if(formData.get('phone').trim()){
-                 const phoneNumber = libphonenumber.parsePhoneNumberFromString(formData.get('phone').trim(), 'GB');
-                 if(phoneNumber) fullPhoneNumber = phoneNumber.format('E.164');
+                 if (typeof libphonenumber !== 'undefined') {
+                    const phoneNumber = libphonenumber.parsePhoneNumberFromString(formData.get('phone').trim(), 'GB');
+                    if(phoneNumber) fullPhoneNumber = phoneNumber.format('E.164');
+                 }
             }
 
             const data = {
@@ -172,17 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: formData.get('message')
             };
 
+            // This part is mocked. Replace with your actual API call.
             const apiUrl = '/api/send-email';
 
             try {
+                // MOCKED API CALL
                 await new Promise(resolve => setTimeout(resolve, 1500)); 
                 const response = { ok: true, json: () => Promise.resolve({ message: "Success" }) };
+                // END MOCKED API CALL
                 
                 if (response.ok) {
                     formResponse.textContent = "Thanks for reaching out! We'll get back to you soon.";
                     formResponse.classList.add('text-green-400');
                     contactForm.reset();
-                    inputs.forEach(clearError); 
+                    inputs.forEach(input => input && clearError(input)); 
                     setTimeout(checkFormValidity, 100);
                 } else {
                     formResponse.textContent = `Error: ${'Something went wrong.'}`;
@@ -205,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenu = document.getElementById('mobile-menu');
     
     const closeMenu = () => {
-        if (mobileMenu.classList.contains('menu-open')) {
+        if (mobileMenu && mobileMenu.classList.contains('menu-open')) {
             mobileMenu.classList.remove('menu-open');
             setTimeout(() => {
                 mobileMenu.classList.add('hidden');
@@ -213,16 +233,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    mobileMenuButton.addEventListener('click', () => {
-        if (mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.remove('hidden');
-            setTimeout(() => { // Allow display change to apply before transform
-                mobileMenu.classList.add('menu-open');
-            }, 10);
-        } else {
-            closeMenu();
-        }
-    });
+    if(mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => { // Allow display change to apply before transform
+                    mobileMenu.classList.add('menu-open');
+                }, 10);
+            } else {
+                closeMenu();
+            }
+        });
+    }
+
 
     document.querySelectorAll('#mobile-menu a').forEach(link => {
         link.addEventListener('click', () => {
@@ -232,26 +255,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Footer Year ---
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const yearEl = document.getElementById('year');
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+    }
+    
 
     // --- Header Scroll Effect ---
     const header = document.getElementById('header');
-    window.onscroll = () => {
-        if (window.scrollY > 50) {
-            header.classList.add('bg-opacity-95');
-            header.classList.remove('bg-opacity-80');
-        } else {
-            header.classList.add('bg-opacity-80');
-            header.classList.remove('bg-opacity-95');
-        }
-    };
+    if (header) {
+        window.onscroll = () => {
+            if (window.scrollY > 50) {
+                header.classList.add('bg-opacity-95');
+                header.classList.remove('bg-opacity-80');
+            } else {
+                header.classList.add('bg-opacity-80');
+                header.classList.remove('bg-opacity-95');
+            }
+        };
+    }
+    
 
     // --- Scroll-triggered Animations ---
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
-                const children = entry.target.querySelectorAll('.group, .merch-card, .max-w-4xl, .max-w-5xl, .max-w-2xl, #gallery-container');
+                const children = entry.target.querySelectorAll('.group, .merch-card, .max-w-4xl, .max-w-5xl, .max-w-2xl, #image-gallery-container, #video-gallery-container');
                   children.forEach((child, index) => {
                     child.style.transitionDelay = `${index * 100}ms`;
                   });
@@ -267,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPlayers = document.querySelectorAll('#music audio');
     audioPlayers.forEach(player => {
         player.addEventListener('play', () => {
-            // When this player starts, pause all others
             audioPlayers.forEach(otherPlayer => {
                 if (otherPlayer !== player) {
                     otherPlayer.pause();
@@ -276,76 +305,182 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Gallery Slideshow ---
-    const galleryContainer = document.getElementById('gallery-container');
-    if (galleryContainer) {
-        const galleryImages = [
-            { main: 'assets/images/gallery-image1.png', thumb: 'assets/images/gallery-image1.png', alt: 'Electric Pulse live on stage' },
-            { main: 'assets/images/gallery-image2.png', thumb: 'assets/images/gallery-image2.png', alt: 'The crowd at an Electric Pulse show' },
-            { main: 'assets/images/gallery-image3.png', thumb: 'assets/images/gallery-image3.png', alt: 'Jax performing a guitar solo' }
-        ];
+    // --- Generic Slideshow Creation ---
+    const createSlideshow = (galleryId, mediaData, mediaType) => {
+        const galleryContainer = document.getElementById(`${galleryId}-gallery-container`);
+        if (!galleryContainer) return;
 
-        const mainImageWrapper = document.getElementById('main-image-wrapper');
-        const thumbnailContainer = document.getElementById('thumbnail-container');
-        let currentImageIndex = 0;
+        const mainMediaWrapper = document.getElementById(`main-${mediaType}-wrapper`);
+        const thumbnailContainer = document.getElementById(`${mediaType}-thumbnail-container`);
+        const prevBtn = document.getElementById(`${mediaType}-prev-btn`);
+        const nextBtn = document.getElementById(`${mediaType}-next-btn`);
+        
+        if (!mainMediaWrapper || !thumbnailContainer || !prevBtn || !nextBtn) return;
 
-        // Initialize gallery
-        if(mainImageWrapper && thumbnailContainer) {
-            mainImageWrapper.innerHTML = ''; // Clear previous images
-            thumbnailContainer.innerHTML = ''; // Clear previous thumbs
+        let currentMediaIndex = 0;
+        mainMediaWrapper.innerHTML = '';
+        thumbnailContainer.innerHTML = '';
 
-            galleryImages.forEach((image, index) => {
-                // Create main slide image
-                const slide = document.createElement('img');
-                slide.src = image.main;
-                slide.alt = image.alt;
-                slide.className = 'absolute top-0 left-0 w-full h-full object-cover rounded-md transition-opacity duration-700 ease-in-out';
-                slide.style.opacity = index === 0 ? '1' : '0';
-                slide.onerror = function() { this.onerror=null; this.src='https://placehold.co/1200x800/171122/ffffff?text=Image+Error'; };
-                mainImageWrapper.appendChild(slide);
+        mediaData.forEach((mediaItem, index) => {
+            const slideWrapper = document.createElement('div');
+            // Use 'relative' for the slide wrapper to contain its absolute children
+            slideWrapper.className = 'absolute top-0 left-0 w-full h-full'; 
 
-                // Create thumbnail image
-                const thumb = document.createElement('img');
-                thumb.src = image.thumb;
-                thumb.alt = `Thumbnail for ${image.alt}`;
-                thumb.className = 'thumbnail cursor-pointer w-24 h-16 object-cover rounded-md border-2 transition-all duration-300';
-                thumb.classList.add(index === 0 ? 'opacity-100' : 'opacity-60', index === 0 ? 'border-brand-pink' : 'border-transparent');
-                if(index === 0) thumb.classList.add('scale-105');
-                thumb.addEventListener('click', () => showImage(index));
-                thumb.onerror = function() { this.onerror=null; this.src='https://placehold.co/120x80/171122/ffffff?text=Error'; };
-                thumbnailContainer.appendChild(thumb);
-            });
+            // Set initial opacity and pointer-events
+            if (index === 0) {
+                slideWrapper.style.opacity = '1';
+                slideWrapper.style.pointerEvents = 'auto';
+            } else {
+                slideWrapper.style.opacity = '0';
+                slideWrapper.style.pointerEvents = 'none';
+            }
 
-            const showImage = (index) => {
-                if(index === currentImageIndex) return; // Do nothing if clicking the current image
+            let slide;
+
+            if (mediaType === 'video') {
+                slide = document.createElement('video');
+                slide.src = mediaItem.src;
+                slide.poster = mediaItem.poster;
+                slide.controls = false; // Disable default controls
+                slide.preload = 'metadata'; // Helps with getting duration and dimensions
                 
-                // Update main images
-                const slides = mainImageWrapper.querySelectorAll('img');
-                slides[currentImageIndex].style.opacity = '0';
-                slides[index].style.opacity = '1';
-
-                // Update thumbnails
-                const thumbs = thumbnailContainer.querySelectorAll('img');
-                thumbs[currentImageIndex].classList.remove('opacity-100', 'border-brand-pink', 'scale-105');
-                thumbs[currentImageIndex].classList.add('opacity-60', 'border-transparent');
-                thumbs[index].classList.add('opacity-100', 'border-brand-pink', 'scale-105');
-                thumbs[index].classList.remove('opacity-60', 'border-transparent');
+                const objectFitClass = 'object-contain';
+                slide.className = `w-full h-full ${objectFitClass} rounded-md`;
                 
-                currentImageIndex = index;
-            };
+                const overlay = document.createElement('div');
+                overlay.className = 'video-overlay';
+                overlay.innerHTML = `
+                    <span class="material-symbols-outlined play-icon">play_circle</span>
+                    <span class="material-symbols-outlined pause-icon">pause_circle</span>
+                `;
+                
+                slideWrapper.appendChild(slide);
+                slideWrapper.appendChild(overlay);
 
-            document.getElementById('prev-btn').addEventListener('click', () => {
-                const newIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
-                showImage(newIndex);
-            });
+                let fadeOutTimeout;
+                const playIcon = overlay.querySelector('.play-icon');
+                const pauseIcon = overlay.querySelector('.pause-icon');
 
-            document.getElementById('next-btn').addEventListener('click', () => {
-                const newIndex = (currentImageIndex + 1) % galleryImages.length;
-                showImage(newIndex);
-            });
-        }
-    }
+                // Single function to update the icon based on video state
+                const updateIcon = () => {
+                    if (slide.paused) {
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                    } else {
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
+                    }
+                };
+
+                const showAndFadeOverlay = () => {
+                    clearTimeout(fadeOutTimeout);
+                    overlay.classList.add('show');
+                    if (!slide.paused) { // Only fade out if playing
+                        fadeOutTimeout = setTimeout(() => {
+                            overlay.classList.remove('show');
+                        }, 800);
+                    }
+                };
+                
+                const showAndHoldOverlay = () => {
+                    clearTimeout(fadeOutTimeout);
+                    overlay.classList.add('show');
+                };
+                
+                slide.addEventListener('play', () => { updateIcon(); showAndFadeOverlay(); });
+                slide.addEventListener('pause', () => { updateIcon(); showAndHoldOverlay(); });
+                slide.addEventListener('ended', () => { updateIcon(); showAndHoldOverlay(); });
+
+                slideWrapper.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent potential conflicts
+                    if (slide.paused) {
+                        slide.play();
+                    } else {
+                        slide.pause();
+                    }
+                });
+                
+                // Set the initial icon state
+                updateIcon();
+
+            } else { // image
+                slide = document.createElement('img');
+                slide.src = mediaItem.src;
+                slide.onerror = () => { slide.src = `https://placehold.co/1200x800/171122/ffffff?text=${mediaType}+Error`; };
+                const objectFitClass = 'object-cover';
+                slide.className = `w-full h-full ${objectFitClass} rounded-md`;
+                slideWrapper.appendChild(slide);
+            }
+            
+            slide.alt = mediaItem.alt;
+            mainMediaWrapper.appendChild(slideWrapper);
+
+            // Create thumbnail
+            const thumb = document.createElement('img');
+            thumb.src = mediaItem.thumb;
+            thumb.alt = `Thumbnail for ${mediaItem.alt}`;
+            thumb.className = 'thumbnail cursor-pointer w-24 h-16 object-cover rounded-md border-2 transition-all duration-300';
+            thumb.classList.add(index === 0 ? 'opacity-100' : 'opacity-60', index === 0 ? 'border-brand-pink' : 'border-transparent');
+             if(index === 0) thumb.classList.add('scale-105');
+            thumb.addEventListener('click', () => showMedia(index));
+            thumb.onerror = () => { thumb.src = 'https://placehold.co/120x80/171122/ffffff?text=Error'; };
+            thumbnailContainer.appendChild(thumb);
+        });
+
+        const showMedia = (index) => {
+            if (index === currentMediaIndex) return;
+
+            const slideWrappers = mainMediaWrapper.querySelectorAll('.absolute');
+            const thumbs = thumbnailContainer.querySelectorAll('img');
+
+            const currentVideo = slideWrappers[currentMediaIndex].querySelector('video');
+            if (currentVideo && typeof currentVideo.pause === 'function') {
+                currentVideo.pause();
+            }
+
+            // Hide current slide and disable pointer events
+            slideWrappers[currentMediaIndex].style.opacity = '0';
+            slideWrappers[currentMediaIndex].style.pointerEvents = 'none';
+            
+            // Show new slide and enable pointer events
+            slideWrappers[index].style.opacity = '1';
+            slideWrappers[index].style.pointerEvents = 'auto';
+
+            thumbs[currentMediaIndex].classList.remove('opacity-100', 'border-brand-pink', 'scale-105');
+            thumbs[currentMediaIndex].classList.add('opacity-60', 'border-transparent');
+            thumbs[index].classList.add('opacity-100', 'border-brand-pink', 'scale-105');
+            thumbs[index].classList.remove('opacity-60', 'border-transparent');
+
+            currentMediaIndex = index;
+        };
+
+        prevBtn.addEventListener('click', () => {
+            const newIndex = (currentMediaIndex - 1 + mediaData.length) % mediaData.length;
+            showMedia(newIndex);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const newIndex = (currentMediaIndex + 1) % mediaData.length;
+            showMedia(newIndex);
+        });
+    };
+
+    // --- Initialize Galleries ---
+    const videoData = [
+        { src: 'assets/video/electric-pulse-trailer.mp4', poster: 'assets/images/trailer-still.png', thumb: 'assets/images/trailer-still.png', alt: 'Official Band Trailer' },
+        { src: 'assets/video/jax-interview.mp4', poster: 'assets/images/interview-still.png', thumb: 'assets/images/interview-still.png', alt: 'Jax Interview' }
+    ];
+
+    const imageData = [
+        { src: 'assets/images/gallery-image1.png', thumb: 'assets/images/gallery-image1.png', alt: 'Electric Pulse live on stage' },
+        { src: 'assets/images/gallery-image2.png', thumb: 'assets/images/gallery-image2.png', alt: 'The crowd at an Electric Pulse show' },
+        { src: 'assets/images/gallery-image3.png', thumb: 'assets/images/gallery-image3.png', alt: 'Jax performing a guitar solo' }
+    ];
     
+    createSlideshow('video', videoData, 'video');
+    createSlideshow('image', imageData, 'image');
+
+
     // --- Parallax Hero Text ---
     const heroContent = document.querySelector('.hero-content');
     if (heroContent) {
