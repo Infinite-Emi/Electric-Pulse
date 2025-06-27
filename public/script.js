@@ -364,11 +364,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Single function to update the icon based on video state
                 const updateIcon = () => {
                     if (slide.paused) {
-                        playIcon.style.display = 'none';
-                        pauseIcon.style.display = 'block';
-                    } else {
                         playIcon.style.display = 'block';
                         pauseIcon.style.display = 'none';
+                    } else {
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
                     }
                 };
 
@@ -492,6 +492,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 heroContent.style.transform = `translateY(${scrollY * 0.5}px)`;
                 // Fade out the text as it moves down for a smoother transition
                 heroContent.style.opacity = 1 - (scrollY / (window.innerHeight / 1.5));
+            }
+        });
+    }
+    
+    // --- Band Member Modal ---
+    const memberCards = document.querySelectorAll('.member-card');
+    const modal = document.getElementById('member-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalImage = document.getElementById('modal-image');
+    const modalName = document.getElementById('modal-name');
+    const modalRole = document.getElementById('modal-role');
+    const modalBio = document.getElementById('modal-bio');
+
+    const bandMemberBios = {
+        jax: {
+            name: 'JAX',
+            role: 'Lead Vocals & Synth-Guitar',
+            image: 'assets/images/Jax.png',
+            bio: "Jax is the supernova heart of Electric Pulse. Once a code-runner in the digital underworld, he traded his data streams for sound waves, programming his synth-guitar, 'Stardust', to sing with the fire of a dying star. His journey from the shadows of Neo-Kyoto to the galactic stage is etched into every lyric he screams, a tale of rebellion painted in neon and chrome."
+        },
+        cyra: {
+            name: 'CYRA',
+            role: 'Bass & Backing Vocals',
+            image: 'assets/images/Cyra.png',
+            bio: "Cyra, the silent force, provides the deep-space gravity for the band's sound. Raised in the orbital habitats above a terraformed Mars, she learned to play bass by feeling the rhythmic vibrations of the station's life support systems. Her bass lines are the steady, cosmic hum that grounds their chaotic energy, and her ethereal vocals are a haunting echo from the void between worlds."
+        },
+        nexo: {
+            name: 'NEXO',
+            role: 'Acoustic & Digital Drums',
+            image: 'assets/images/Nexo.png',
+            bio: "Nexo is the ghost in the machine, a rhythmic phantom who fuses the organic with the artificial. A former combat android who discovered a love for jazz and breakbeats in a forgotten archive, he reprogrammed his combat protocols for percussive precision. His hybrid kit, a mesh of reclaimed metal and holographic pads, creates a pulse that's both savagely primal and flawlessly futuristic."
+        },
+        orion: {
+            name: 'ORION',
+            role: 'Keys & Soundscapes',
+            image: 'assets/images/Orion.png',
+            bio: "Orion is the architect of dreams, the weaver of the band's sonic tapestry. A refugee from a dimension of pure sound, he translates the colors of nebulae and the whispers of black holes into vast, immersive soundscapes. His hands dance across a custom rig of vintage synthesizers and alien tech, creating the atmospheric storms and shimmering auroras that define the Electric Pulse universe."
+        }
+    };
+
+    const openModal = (memberId) => {
+        const member = bandMemberBios[memberId];
+        if (member && modal) {
+            modalImage.src = member.image;
+            modalImage.alt = member.name;
+            modalName.textContent = member.name;
+            modalRole.textContent = member.role;
+            modalBio.textContent = member.bio;
+            modal.classList.remove('hidden');
+        }
+    };
+
+    const closeModal = () => {
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    };
+
+    memberCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const memberId = card.dataset.member;
+            openModal(memberId);
+        });
+    });
+
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeModal);
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
             }
         });
     }

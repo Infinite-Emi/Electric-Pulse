@@ -113,7 +113,8 @@
                     <p>Born from the neon-drenched streets of a future metropolis, Electric Pulse is more than a band—it's a sonic revolution. We blend hard-hitting rock riffs with mind-bending electronic soundscapes to create a sound that's both nostalgic and lightyears ahead of its time. Our music tells stories of chrome-plated rebels, interstellar voyages, and the electric heartbeat that connects us all.</p>
                 </div>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                    <div class="text-center group" style="transition-delay: 100ms;">
+                    <!-- JAX -->
+                    <div class="text-center group member-card" data-member="jax">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/Jax.png" alt="Jax, Lead Vocals & Guitar" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
                             <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
@@ -121,7 +122,8 @@
                         <h3 class="text-2xl font-bold font-orbitron">JAX</h3>
                         <p class="text-brand-pink">Lead Vocals & Synth-Guitar</p>
                     </div>
-                    <div class="text-center group" style="transition-delay: 200ms;">
+                    <!-- CYRA -->
+                    <div class="text-center group member-card" data-member="cyra">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/Cyra.png" alt="Cyra, Bass & Vocals" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
                             <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
@@ -129,7 +131,8 @@
                         <h3 class="text-2xl font-bold font-orbitron">CYRA</h3>
                         <p class="text-brand-pink">Bass & Backing Vocals</p>
                     </div>
-                    <div class="text-center group" style="transition-delay: 300ms;">
+                    <!-- NEXO -->
+                    <div class="text-center group member-card" data-member="nexo">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/Nexo.png" alt="Nexo, Drums" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
                             <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
@@ -137,7 +140,8 @@
                         <h3 class="text-2xl font-bold font-orbitron">NEXO</h3>
                         <p class="text-brand-pink">Acoustic & Digital Drums</p>
                     </div>
-                    <div class="text-center group" style="transition-delay: 400ms;">
+                    <!-- ORION -->
+                    <div class="text-center group member-card" data-member="orion">
                         <div class="hexagon-container w-full aspect-square mx-auto mb-4 p-1.5">
                             <img src="assets/images/Orion.png" alt="Orion, Keys & Soundscapes" class="hexagon-image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/0a0a0a/ffffff?text=Image+Not+Found'"/>
                             <span class="spark spark-1"></span><span class="spark spark-2"></span><span class="spark spark-3"></span><span class="spark spark-4"></span><span class="spark spark-5"></span><span class="spark spark-6"></span>
@@ -354,6 +358,21 @@
              <p class="text-sm mt-2">Designed with futuristic love.</p>
         </div>
     </footer>
+
+    <!-- Band Member Modal -->
+    <div id="member-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <div class="text-center">
+                <div id="modal-hex-container" class="hexagon-container w-48 h-48 mx-auto mb-4 p-1.5">
+                    <img id="modal-image" src="" alt="" class="hexagon-image"/>
+                </div>
+                <h3 id="modal-name" class="text-3xl font-bold font-orbitron"></h3>
+                <p id="modal-role" class="text-brand-pink text-lg"></p>
+                <p id="modal-bio" class="text-gray-300 mt-4 text-left"></p>
+            </div>
+        </div>
+    </div>
     
     <script src="script.js" defer></script>
 </body>
