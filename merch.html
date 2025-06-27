@@ -1,0 +1,252 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Cart array to store product objects
+    let cart = JSON.parse(localStorage.getItem('merchCart')) || [];
+
+    // Get DOM elements
+    const merchProductsSection = document.getElementById('merch-products');
+    const cartDisplaySection = document.getElementById('cart-display');
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartTotalSpan = document.getElementById('cart-total');
+    const cartCountPill = document.getElementById('cart-count-pill');
+    const cartEmptyMessage = document.getElementById('cart-empty-message');
+    const checkoutHeaderBtn = document.getElementById('checkout-header-btn');
+    const cartIcon = document.getElementById('cart-icon');
+    const clearCartBtn = document.getElementById('clear-cart-btn');
+    const continueShoppingBtn = document.getElementById('continue-shopping-btn');
+    const checkoutCartBtn = document.getElementById('checkout-cart-btn');
+    const notificationOverlay = document.getElementById('notification-overlay');
+
+    // --- Utility Functions ---
+
+    function saveCart() {
+        localStorage.setItem('merchCart', JSON.stringify(cart));
+    }
+
+    function showNotification(message, type = 'info') {
+        notificationOverlay.textContent = message;
+        notificationOverlay.className = `fixed top-4 left-1/2 -translate-x-1/2 z-1000 p-3 rounded-md text-white font-bold text-center shadow-lg animate-slideDownFadeIn ${type}`;
+        notificationOverlay.classList.remove('hidden');
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+            notificationOverlay.classList.add('animate-slideUpFadeOut');
+            notificationOverlay.addEventListener('animationend', () => {
+                notificationOverlay.classList.add('hidden');
+                notificationOverlay.classList.remove('animate-slideUpFadeOut'); // Clean up animation class
+            }, { once: true });
+        }, 3000);
+    }
+
+    function formatPrice(cents) {
+        return `£${(cents / 100).toFixed(2)}`;
+    }
+
+    // --- Cart Management Functions ---
+
+    function addToCart(productId, productName, productPriceCents, productImage) {
+        const existingItem = cart.find(item => item.id === productId);
+
+        if (existingItem) {
+            existingItem.quantity++;
+            showNotification(`${productName} quantity updated!`, 'info');
+        } else {
+            cart.push({
+                id: productId,
+                name: productName,
+                price: productPriceCents,
+                image: productImage,
+                quantity: 1
+            });
+            showNotification(`${productName} added to merch bag!`, 'success');
+        }
+        saveCart();
+        renderCart();
+    }
+
+    function updateQuantity(productId, change) {
+        const itemIndex = cart.findIndex(item => item.id === productId);
+        if (itemIndex > -1) {
+            cart[itemIndex].quantity += change;
+            if (cart[itemIndex].quantity <= 0) {
+                cart.splice(itemIndex, 1); // Remove item if quantity is 0 or less
+                showNotification('Item removed from merch bag.', 'error');
+            } else {
+                showNotification('Item quantity updated.', 'info');
+            }
+            saveCart();
+            renderCart();
+        }
+    }
+
+    function removeFromCart(productId) {
+        const initialCartLength = cart.length;
+        cart = cart.filter(item => item.id !== productId);
+        if (cart.length < initialCartLength) {
+            showNotification('Item removed from merch bag.', 'error');
+        }
+        saveCart();
+        renderCart();
+    }
+
+    function clearCart() {
+        if (cart.length > 0) {
+            cart = [];
+            saveCart();
+            renderCart();
+            showNotification('Merch bag cleared!', 'error');
+        } else {
+            showNotification('Merch bag is already empty!', 'info');
+        }
+    }
+
+    // --- Render Cart Display ---
+
+    function renderCart() {
+        cartItemsContainer.innerHTML = ''; // Clear current items
+
+        if (cart.length === 0) {
+            cartEmptyMessage.classList.remove('hidden');
+            cartDisplaySection.classList.add('hidden'); // Hide the entire cart display
+            checkoutHeaderBtn.classList.add('hidden'); // Hide header checkout button
+            cartCountPill.classList.add('hidden'); // Hide cart count pill
+        } else {
+            cartEmptyMessage.classList.add('hidden');
+            cartDisplaySection.classList.remove('hidden'); // Show the entire cart display
+            checkoutHeaderBtn.classList.remove('hidden'); // Show header checkout button
+
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-800 p-4 rounded-lg shadow-md';
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md flex-shrink-0">
+                    <div class="flex-grow text-center sm:text-left">
+                        <h4 class="text-lg font-semibold text-white">${item.name}</h4>
+                        <p class="text-gray-400 text-sm">${formatPrice(item.price)} each</p>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button class="qty-btn text-brand-pink hover:text-brand-pink-hover text-xl" data-action="decrease" data-product-id="${item.id}">-</button>
+                        <span class="text-white font-medium text-lg">${item.quantity}</span>
+                        <button class="qty-btn text-brand-pink hover:text-brand-pink-hover text-xl" data-action="increase" data-product-id="${item.id}">+</button>
+                    </div>
+                    <span class="text-white font-bold text-xl w-32 text-center sm:text-right flex-shrink-0">${formatPrice(item.price * item.quantity)}</span>
+                    <button class="remove-from-cart-btn text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 ml-auto sm:ml-0">
+                        <span class="material-icons">delete</span>
+                    </button>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            // Update event listeners for new elements
+            addCartEventListeners();
+        }
+        updateCartCount();
+        updateCartTotal();
+    }
+
+    function updateCartCount() {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        if (totalItems > 0) {
+            cartCountPill.textContent = totalItems;
+            cartCountPill.classList.remove('hidden');
+        } else {
+            cartCountPill.classList.add('hidden');
+        }
+    }
+
+    function updateCartTotal() {
+        const totalCents = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotalSpan.textContent = formatPrice(totalCents);
+    }
+
+    // --- Event Listeners ---
+
+    // Event delegation for Add to Cart buttons
+    merchProductsSection.addEventListener('click', (event) => {
+        const button = event.target.closest('.add-to-cart-btn');
+        if (button) {
+            const productCard = button.closest('.merch-item-card');
+            const productId = productCard.dataset.productId;
+            const productName = productCard.dataset.productName;
+            const productPriceCents = parseInt(productCard.dataset.productPriceGbpCents);
+            const productImage = productCard.dataset.productImage;
+            addToCart(productId, productName, productPriceCents, productImage);
+        }
+    });
+
+    // Event delegation for quantity and remove buttons within the cart
+    function addCartEventListeners() {
+        document.querySelectorAll('.qty-btn').forEach(button => {
+            button.onclick = (event) => { // Use onclick to easily overwrite for dynamically added elements
+                const productId = event.target.dataset.productId;
+                const action = event.target.dataset.action;
+                if (action === 'increase') {
+                    updateQuantity(productId, 1);
+                } else if (action === 'decrease') {
+                    updateQuantity(productId, -1);
+                }
+            };
+        });
+
+        document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+            button.onclick = (event) => { // Use onclick to easily overwrite for dynamically added elements
+                const productId = event.target.closest('.remove-from-cart-btn').dataset.productId;
+                removeFromCart(productId);
+            };
+        });
+    }
+
+    // Navigation and Cart Toggle
+    cartIcon.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent default link behavior
+        cartDisplaySection.classList.toggle('hidden');
+        if (!cartDisplaySection.classList.contains('hidden')) {
+            cartDisplaySection.classList.add('animate-fadeIn');
+            cartDisplaySection.classList.remove('animate-slideUpFadeOut');
+        } else {
+            cartDisplaySection.classList.remove('animate-fadeIn');
+        }
+    });
+
+    checkoutHeaderBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        cartDisplaySection.classList.toggle('hidden');
+        if (!cartDisplaySection.classList.contains('hidden')) {
+            cartDisplaySection.classList.add('animate-fadeIn');
+            cartDisplaySection.classList.remove('animate-slideUpFadeOut');
+        } else {
+            cartDisplaySection.classList.remove('animate-fadeIn');
+        }
+    });
+
+    clearCartBtn.addEventListener('click', clearCart);
+
+    continueShoppingBtn.addEventListener('click', () => {
+        cartDisplaySection.classList.add('animate-slideUpFadeOut');
+        cartDisplaySection.addEventListener('animationend', () => {
+            cartDisplaySection.classList.add('hidden');
+            cartDisplaySection.classList.remove('animate-slideUpFadeOut'); // Clean up animation class
+        }, { once: true });
+    });
+
+    checkoutCartBtn.addEventListener('click', () => {
+        if (cart.length > 0) {
+            // In a real application, you would integrate with a payment gateway here.
+            // For now, we'll just simulate a successful checkout.
+            showNotification('Proceeding to checkout! (Simulated)', 'success');
+            setTimeout(() => {
+                clearCart(); // Clear cart after simulated checkout
+                cartDisplaySection.classList.add('animate-slideUpFadeOut');
+                cartDisplaySection.addEventListener('animationend', () => {
+                    cartDisplaySection.classList.add('hidden');
+                    cartDisplaySection.classList.remove('animate-slideUpFadeOut'); // Clean up animation class
+                }, { once: true });
+            }, 1500);
+        } else {
+            showNotification('Your merch bag is empty. Add items before checking out!', 'error');
+        }
+    });
+
+
+    // Initial render when page loads
+    renderCart();
+});
