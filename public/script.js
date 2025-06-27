@@ -363,12 +363,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Single function to update the icon based on video state
                 const updateIcon = () => {
+                    // This is the corrected, intuitive logic.
                     if (slide.paused) {
-                        playIcon.style.display = 'block';
-                        pauseIcon.style.display = 'none';
-                    } else {
+                        // If the video is paused, show the PLAY icon.
                         playIcon.style.display = 'none';
                         pauseIcon.style.display = 'block';
+                    } else {
+                        // If the video is playing, show the PAUSE icon.
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
                     }
                 };
 
